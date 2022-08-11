@@ -9,14 +9,13 @@
 import UIKit
 
 class TableViewController: UITableViewController {
-  let appDelegate = UIApplication.shared.delegate as? AppDelegate
-  
   let notifications = ["Local Notification",
                        "Local Notification with Action",
                        "Local Notification with Content",
-                       "Push Notification with  APNs",
-                       "Push Notification with Firebase",
-                       "Push Notification with Content"]
+//                       "Push Notification with  APNs",
+//                       "Push Notification with Firebase",
+//                       "Push Notification with Content"
+  ]
 
   // MARK: - Table view data source
 
@@ -40,14 +39,31 @@ class TableViewController: UITableViewController {
     cell?.textLabel?.textColor = .red
         
     let notificationType = notifications[indexPath.row]
+    
+
         
     let alert = UIAlertController(title: notificationType,
                                   message: "After 3 seconds " + notificationType + " will appear",
                                   preferredStyle: .alert)
-        
-    let okAction = UIAlertAction(title: "OK", style: .default) { action in
-      NotificationsManager.shared.scheduleNotification(notificationType: notificationType)
+    
+    var alertAction: ((UIAlertAction) -> Void)?
+    
+    switch notificationType {
+    case "Local Notification":
+      alertAction = { _ in
+        NotificationsManager.shared.scheduleNotification(notificationTitle: notificationType)
+      }
+    case "Local Notification with Action":
+      alertAction = { _ in
+        NotificationsManager.shared.scheduleNotificationsWithActions(notificationTitle: notificationType)
+      }
+    case "Local Notification with Content":
+      break
+    default:
+      print("Unknown Notification Type")
     }
+        
+    let okAction = UIAlertAction(title: "OK", style: .default, handler: alertAction)
         
     alert.addAction(okAction)
     present(alert, animated: true, completion: nil)

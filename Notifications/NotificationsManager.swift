@@ -37,12 +37,34 @@ class NotificationsManager: NSObject {
     }
   }
   
-  func scheduleNotification(notificationType: String) {
+  func scheduleNotification(notificationTitle: String) {
     let content = UNMutableNotificationContent()
-    let userAction = "UserActions"
+    content.title = notificationTitle
+    content.body = "This is example how to create \(notificationTitle)"
+    content.sound = UNNotificationSound.default
+    content.badge = 1
     
-    content.title = notificationType
-    content.body = "This is example how to create \(notificationType)"
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
+  
+    // для каждого уведомления нужен ID
+    let id = "Local Notification"
+    let notificationRequest = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+    notificationCenter.add(notificationRequest) { error in
+      if let error = error {
+        print("Error \(error.localizedDescription)")
+      }
+    }
+  }
+  
+  func scheduleNotificationsWithActions(notificationTitle: String) {
+    let content = UNMutableNotificationContent()
+    
+    // 2 //
+    let userAction = "UserActions"
+    // 2 //
+    
+    content.title = notificationTitle
+    content.body = "This is example how to create \(notificationTitle)"
     content.sound = UNNotificationSound.default
     content.badge = 1
     content.categoryIdentifier = userAction
@@ -58,6 +80,7 @@ class NotificationsManager: NSObject {
       }
     }
     
+    // 1 //
     let snoozeAction = UNNotificationAction(
       identifier: "Snooze",
       title: "Snooze",
@@ -68,16 +91,23 @@ class NotificationsManager: NSObject {
       title: "Delete",
       options: [.destructive]
     )
+    // 1 //
+    
+    // 2 //
     let category = UNNotificationCategory(
       identifier: userAction,
       actions: [snoozeAction, deleteAction],
       intentIdentifiers: [],
       options: []
     )
+    // 2 //
     
+    // 3 //
     notificationCenter.setNotificationCategories([category])
+    // 3 //
   }
 }
+
 
 extension NotificationsManager: UNUserNotificationCenterDelegate {
   func userNotificationCenter(
@@ -97,6 +127,7 @@ extension NotificationsManager: UNUserNotificationCenterDelegate {
     didReceive response: UNNotificationResponse,
     withCompletionHandler completionHandler: @escaping () -> Void
   ) {
+    defer { completionHandler() }
     if response.notification.request.identifier == "Local Notification" {
       print(response.notification.request.content.body)
     }
@@ -108,12 +139,11 @@ extension NotificationsManager: UNUserNotificationCenterDelegate {
       print("Default Action")
     case "Snooze":
       print("Snooze Action")
-      scheduleNotification(notificationType: "Snoozing")
+      scheduleNotification(notificationTitle: "Snoozing")
     case "Delete":
       print("Delete Action")
     default:
       print("Unknown Action")
     }
-    completionHandler()
   }
 }

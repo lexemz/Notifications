@@ -48,7 +48,11 @@ class NotificationsManager: NSObject {
   
     // для каждого уведомления нужен ID
     let id = "Local Notification"
-    let notificationRequest = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+    let notificationRequest = UNNotificationRequest(
+      identifier: id,
+      content: content,
+      trigger: trigger
+    )
     notificationCenter.add(notificationRequest) { error in
       if let error = error {
         print("Error \(error.localizedDescription)")
@@ -73,7 +77,11 @@ class NotificationsManager: NSObject {
   
     // для каждого уведомления нужен ID
     let id = "Local Notification"
-    let notificationRequest = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
+    let notificationRequest = UNNotificationRequest(
+      identifier: id,
+      content: content,
+      trigger: trigger
+    )
     notificationCenter.add(notificationRequest) { error in
       if let error = error {
         print("Error \(error.localizedDescription)")

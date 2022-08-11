@@ -42,11 +42,11 @@ class TableViewController: UITableViewController {
     let notificationType = notifications[indexPath.row]
         
     let alert = UIAlertController(title: notificationType,
-                                  message: "After 5 seconds " + notificationType + " will appear",
+                                  message: "After 3 seconds " + notificationType + " will appear",
                                   preferredStyle: .alert)
         
     let okAction = UIAlertAction(title: "OK", style: .default) { action in
-      self.appDelegate?.scheduleNotification(notificationType: notificationType)
+      NotificationsManager.shared.scheduleNotification(notificationType: notificationType)
     }
         
     alert.addAction(okAction)

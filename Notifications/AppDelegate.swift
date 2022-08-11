@@ -12,10 +12,9 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
-  let notificationCenter = UNUserNotificationCenter.current()
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    requestAuthorization()
+    NotificationsManager.shared.requestAuthorization()
     return true
   }
   
@@ -24,41 +23,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     UIApplication.shared.applicationIconBadgeNumber = 0
   }
 
-  // вызывается при каждом запуске приложения
-  func requestAuthorization() {
-    notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-      if granted {
-        print("Permission Granted")
-        self.getNotificationsSettings()
-      } else {
-        print("Something going wrong: \(String(describing: error?.localizedDescription))")
-      }
-    }
-  }
-  
-  func getNotificationsSettings() {
-    notificationCenter.getNotificationSettings { settings in
-      print(settings)
-    }
-  }
-  
-  func scheduleNotification(notificationType: String) {
-    let content = UNMutableNotificationContent()
-    
-    content.title = notificationType
-    content.body = "This is example how to create \(notificationType)"
-    content.sound = UNNotificationSound.default
-    content.badge = 1
-    
-    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-  
-    // для каждого уведомления нужен ID
-    let id = "Local Notification"
-    let notificationRequest = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
-    notificationCenter.add(notificationRequest) { error in
-      if let error = error {
-        print("Error \(error.localizedDescription)")
-      }
-    }
-  }
 }

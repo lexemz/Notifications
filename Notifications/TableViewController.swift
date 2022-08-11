@@ -58,7 +58,9 @@ class TableViewController: UITableViewController {
         NotificationsManager.shared.scheduleNotificationsWithActions(notificationTitle: notificationType)
       }
     case "Local Notification with Content":
-      break
+      alertAction = { _ in
+        NotificationsManager.shared.scheduleNotificationsWithContent(notificationTitle: notificationType)
+      }
     default:
       print("Unknown Notification Type")
     }

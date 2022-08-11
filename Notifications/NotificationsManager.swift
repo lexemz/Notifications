@@ -106,6 +106,36 @@ class NotificationsManager: NSObject {
     notificationCenter.setNotificationCategories([category])
     // 3 //
   }
+  
+  func scheduleNotificationsWithContent(notificationTitle: String) {
+    let content = UNMutableNotificationContent()
+    content.title = notificationTitle
+    content.body = "This is example how to create \(notificationTitle)"
+    content.sound = UNNotificationSound.default
+    content.badge = 1
+    
+    if let attachment = UNNotificationAttachment.create(
+      image: UIImage(named: "Xcode_icon") ?? UIImage(),
+      options: nil
+    ) {
+      content.attachments = [attachment]
+    }
+    
+    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
+  
+    // для каждого уведомления нужен ID
+    let id = "Local Notification"
+    let notificationRequest = UNNotificationRequest(
+      identifier: id,
+      content: content,
+      trigger: trigger
+    )
+    notificationCenter.add(notificationRequest) { error in
+      if let error = error {
+        print("Error \(error.localizedDescription)")
+      }
+    }
+  }
 }
 
 
@@ -145,5 +175,27 @@ extension NotificationsManager: UNUserNotificationCenterDelegate {
     default:
       print("Unknown Action")
     }
+  }
+}
+
+extension UNNotificationAttachment {
+  
+  static func create(image: UIImage, options: [NSObject : AnyObject]?) -> UNNotificationAttachment? {
+    let identifier = ProcessInfo.processInfo.globallyUniqueString
+    let fileManager = FileManager.default
+    let tmpSubFolderName = ProcessInfo.processInfo.globallyUniqueString
+    let tmpSubFolderURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(tmpSubFolderName, isDirectory: true)
+    do {
+      try fileManager.createDirectory(at: tmpSubFolderURL, withIntermediateDirectories: true, attributes: nil)
+      let imageFileIdentifier = identifier+".png"
+      let fileURL = tmpSubFolderURL.appendingPathComponent(imageFileIdentifier)
+      let imageData = UIImage.pngData(image)
+      try imageData()?.write(to: fileURL)
+      let imageAttachment = try UNNotificationAttachment.init(identifier: imageFileIdentifier, url: fileURL, options: options)
+      return imageAttachment
+    } catch {
+      print("error " + error.localizedDescription)
+    }
+    return nil
   }
 }
